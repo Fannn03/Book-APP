@@ -8,6 +8,14 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 export class CategoryService {
   constructor (private prisma: PrismaService) {}
 
+  async findAll (): Promise<CategoryInterface[]> {
+    return await this.prisma.category.findMany({
+      where: {
+        deletedAt: null
+      }
+    })
+  }
+
   async create (data: Prisma.CategoryCreateInput): Promise<CategoryInterface> {
     try {
       return await this.prisma.category.create({
@@ -17,14 +25,16 @@ export class CategoryService {
       if(err instanceof PrismaClientKnownRequestError) {
         if(err.code == "P2002" && err.meta?.target == "categories_name_key") {
           throw new HttpException({
-            status: HttpStatus.BAD_REQUEST,
-            error: "Category name already exist"
+            code: 400,
+            result: 'bad request',
+            message: "Category name already exist"
           }, HttpStatus.BAD_REQUEST)
         }
       } else {
         throw new HttpException({
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: err.message
+          code: 500,
+          result: 'internal server error',
+          message: err.message
         }, HttpStatus.INTERNAL_SERVER_ERROR)
       }
     }
