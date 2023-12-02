@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as fs from "fs";
 import slugify from 'slugify';
 import { PrismaService } from 'src/prisma.service';
@@ -6,6 +6,7 @@ import { CategoryService } from 'src/categories/categories.service';
 import { BookInterface } from './interfaces/book.interface';
 import { CreateBookDto } from './dto/create-book.dto';
 import { Thickness } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class BookService {
@@ -54,7 +55,21 @@ export class BookService {
 
       return response;
     } catch (err) {
-      console.log(err)
+      if(err instanceof PrismaClientKnownRequestError) {
+        if(err.code == "P2002" && err.meta?.target == "books_title_key") {
+          throw new HttpException({
+            code: 400,
+            result: 'bad request',
+            message: "Book name already exist"
+          }, HttpStatus.BAD_REQUEST)
+        }
+      } else {
+        throw new HttpException({
+          code: 500,
+          result: 'internal server error',
+          message: err.message
+        }, HttpStatus.INTERNAL_SERVER_ERROR)
+      }
     }
   }
 }

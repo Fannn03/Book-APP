@@ -1,8 +1,8 @@
-import { Body, Controller, FileTypeValidator, HttpStatus, ParseFilePipe, ParseFilePipeBuilder, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, FileTypeValidator,  ParseFilePipe, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { BookService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Response, response } from 'express';
+import { Response } from 'express';
 
 @Controller('books')
 export class BooksController {
@@ -38,7 +38,11 @@ export class BooksController {
         data: category
       })
     } catch (err) {
-
+      return response.status(err.status).json({
+        code: err.response.code,
+        result: err.response.result,
+        message: err.response.message
+      })
     }
   }
 }
