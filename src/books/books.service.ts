@@ -7,6 +7,7 @@ import { BookInterface } from './interfaces/book.interface';
 import { CreateBookDto } from './dto/create-book.dto';
 import { Thickness } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { QueryBookInterface } from './interfaces/query-book.interface';
 
 @Injectable()
 export class BookService {
@@ -15,8 +16,25 @@ export class BookService {
     private readonly category: CategoryService
   ) {}
 
-  async findAll (): Promise<BookInterface[]> {
-    return await this.prisma.book.findMany({})
+  async findAll (params: QueryBookInterface): Promise<BookInterface[]> {
+    const query = [];
+    const orderBy = {};
+
+    if(params.title) query.push({ title: params.title });
+    if(params.minYear) query.push({ release_year: { gte: Number(params.minYear) } });
+    if(params.maxYear) query.push({ release_year: { lte: Number(params.maxYear) } });
+    if(params.minPage) query.push({ release_year: { gte: Number(params.minPage) } });
+    if(params.maxPage) query.push({ release_year: { lte: Number(params.maxPage) } });
+    if(params.sortByTitle) orderBy["title"] = params.sortByTitle;
+
+    return await this.prisma.book.findMany({
+      where: {
+        AND: query,
+      },
+      orderBy: [
+        orderBy
+      ]
+    })
   }
 
   async create (category_id: number, file: Express.Multer.File, data: CreateBookDto) {

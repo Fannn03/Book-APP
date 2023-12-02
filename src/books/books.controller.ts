@@ -1,8 +1,9 @@
-import { Body, Controller, FileTypeValidator,  Get,  ParseFilePipe, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, FileTypeValidator,  Get,  ParseFilePipe, Post, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { BookService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
+import { sortByTitle } from './interfaces/query-book.interface';
 
 @Controller('books')
 export class BooksController {
@@ -12,9 +13,22 @@ export class BooksController {
 
   @Get()
   async findAllBook (
+    @Query('title') title: string,
+    @Query('minYear') minYear: number,
+    @Query('maxYear') maxYear: number,
+    @Query('minPage') minPage: number,
+    @Query('maxPage') maxPage: number,
+    @Query('sortByTitle') sortByTitle: sortByTitle,
     @Res() response: Response
   ) {
-    const books = await this.booksService.findAll();
+    const books = await this.booksService.findAll({
+      title: title,
+      minYear: minYear,
+      maxYear: maxYear,
+      minPage: minPage,
+      maxPage: maxPage,
+      sortByTitle: sortByTitle
+    });
 
     return response.json({
       code: 200,
