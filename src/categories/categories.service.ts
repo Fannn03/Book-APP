@@ -36,6 +36,14 @@ export class CategoryService {
     }
   }
 
+  async findOne(id: number) {
+    return await this.prisma.category.findFirst({
+      where: {
+        id: id
+      }
+    })
+  }
+
   async update (id: number, data: Prisma.CategoryUpdateInput): Promise<CategoryInterface> {
     try {
       return await this.prisma.category.update({
