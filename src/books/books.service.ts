@@ -15,6 +15,10 @@ export class BookService {
     private readonly category: CategoryService
   ) {}
 
+  async findAll (): Promise<BookInterface[]> {
+    return await this.prisma.book.findMany({})
+  }
+
   async create (category_id: number, file: Express.Multer.File, data: CreateBookDto) {
     const category = await this.category.findOne(Number(category_id));
     if(category == null) return null;

@@ -1,4 +1,4 @@
-import { Body, Controller, FileTypeValidator,  ParseFilePipe, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, FileTypeValidator,  Get,  ParseFilePipe, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { BookService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -9,6 +9,20 @@ export class BooksController {
   constructor (
     private readonly booksService: BookService
   ) {}
+
+  @Get()
+  async findAllBook (
+    @Res() response: Response
+  ) {
+    const books = await this.booksService.findAll();
+
+    return response.json({
+      code: 200,
+      result: 'ok',
+      message: 'success get record data',
+      data: books
+    })
+  }
 
   @Post()
   @UseInterceptors(FileInterceptor('image'))
