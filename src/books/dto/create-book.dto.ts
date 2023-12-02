@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsNumberString, Max, Min, Validate } from "class-validator";
+import { IsNotEmpty, IsNumberString, Validate } from "class-validator";
 import { ReleaseYearValidation } from "../validation/release-year.validation";
 
 export class CreateBookDto {
