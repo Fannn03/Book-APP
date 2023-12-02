@@ -1,9 +1,10 @@
-import { Body, Controller, FileTypeValidator,  Get,  ParseFilePipe, Post, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, FileTypeValidator,  Get,  Param,  ParseFilePipe, Patch, Post, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { BookService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { sortByTitle } from './interfaces/query-book.interface';
+import { UpdateBookDto } from './dto/update-book.dto';
 
 @Controller('books')
 export class BooksController {
@@ -64,6 +65,44 @@ export class BooksController {
         result: 'created',
         message: 'record created',
         data: category
+      })
+    } catch (err) {
+      return response.status(err.status).json({
+        code: err.response.code,
+        result: err.response.result,
+        message: err.response.message
+      })
+    }
+  }
+
+  @Patch(':id')
+  @UseInterceptors(FileInterceptor('image'))
+  async updateBook (
+    @Param() params: any,
+    @Body() data: UpdateBookDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({ fileType: '.(png|jpg|jpeg)' })
+        ],
+        fileIsRequired: false
+      })
+    ) file: Express.Multer.File,
+    @Res() response: Response
+  ) {
+    try {
+      const book = await this.booksService.update(Number(params.id), file, data)
+
+      if(!book) return response.status(404).json({
+        code: 404,
+        result: 'not found',
+        message: 'book id not found'
+      })
+      
+      return response.json({
+        code: 200,
+        result: 'ok',
+        data: book
       })
     } catch (err) {
       return response.status(err.status).json({
