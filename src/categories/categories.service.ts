@@ -74,4 +74,36 @@ export class CategoryService {
       }
     }
   }
+
+  async delete (id: number): Promise<CategoryInterface> {
+    try {
+      return await this.prisma.category.delete({
+        where: {
+          id: id
+        }
+      })
+    } catch (err) {
+      if(err instanceof PrismaClientKnownRequestError) {
+        if(err.code == "P2025") {
+          throw new HttpException({
+            code: 404,
+            result: 'not found',
+            message: 'record to delete not found'
+          }, HttpStatus.NOT_FOUND)
+        }else {
+          throw new HttpException({
+            code: 500,
+            result: 'internal server error',
+            message: err.message
+          }, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+      } else {
+        throw new HttpException({
+          code: 500,
+          result: 'internal server error',
+          message: err.message
+        }, HttpStatus.INTERNAL_SERVER_ERROR)
+      }
+    }
+  }
 }
