@@ -1,6 +1,6 @@
 import { Thickness } from "@prisma/client";
 
-export interface Book {
+export interface BookInterface {
   id: number,
   category_id: number,
   title: string,
