@@ -123,6 +123,9 @@ export class BookService {
         fs.rmSync(`./public/books/${findBook.image_url}`);
         fs.writeFileSync(`./public/books/${book.image_url}`, file.buffer);
       }
+      
+      // change image url
+      book.image_url = `books/${book.image_url}`;
       return book;
     } catch (err) {
       if (err instanceof PrismaClientKnownRequestError) {
