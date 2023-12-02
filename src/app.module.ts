@@ -7,10 +7,14 @@ import { CategoriesController } from './categories/categories.controller';
 import { PrismaService } from './prisma.service';
 import { BooksController } from './books/books.controller';
 import { BookService } from './books/books.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
-    ConfigModule.forRoot()
+    ConfigModule.forRoot(),
+    ServeStaticModule.forRoot({
+      rootPath: './public'
+    })
   ],
   controllers: [
     AppController,
