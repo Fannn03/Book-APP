@@ -45,7 +45,7 @@ export class BookService {
         id: book.id,
         title: book.title,
         description: book.description,
-        image: `images/${book.image_url}`,
+        image: `books/${book.image_url}`,
         release_year: book.release_year,
         price: book.price,
         total_pages: book.total_page,
