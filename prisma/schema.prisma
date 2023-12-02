@@ -31,9 +31,15 @@ model Book {
   release_year  Int
   price         Int
   total_page    Int
-  thickness     Int
+  thickness     Thickness
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
   @@map("books")
+}
+
+enum Thickness {
+  tipis
+  sedang
+  tebal
 }

@@ -8,7 +8,7 @@ CREATE TABLE `books` (
     `release_year` INTEGER NOT NULL,
     `price` INTEGER NOT NULL,
     `total_page` INTEGER NOT NULL,
-    `thickness` INTEGER NOT NULL,
+    `thickness` ENUM('tipis', 'sedang', 'tebal') NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
