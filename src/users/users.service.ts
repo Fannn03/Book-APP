@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaService } from 'src/prisma.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -10,10 +11,18 @@ export class UsersService {
   ) {}
   
   async create (data: Prisma.UserCreateInput) {
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+    data.password = hashedPassword;
+
     try {
-      return await this.prisma.user.create({
+      const user =  await this.prisma.user.create({
         data: data
       })
+
+      return {
+        id: user.id,
+        username: user.username
+      }
     } catch (err) {
       if(err instanceof PrismaClientKnownRequestError) {
         if(err.code == "P2002" && err.meta?.target == "users_username_key") {
