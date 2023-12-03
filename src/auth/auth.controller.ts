@@ -2,6 +2,7 @@ import { Body, Controller, Post, Res } from '@nestjs/common';
 import { UserRegisterDto } from './dto/user-register.dto';
 import { Response } from 'express';
 import { UsersService } from 'src/users/users.service';
+import { UserLoginDto } from './dto/user-login.dto';
 
 @Controller()
 export class AuthController {
@@ -27,7 +28,32 @@ export class AuthController {
         data: user
       })
     } catch (err) {
-      console.log(err);
+      return response.status(err.status).json({
+        code: err.response.code,
+        result: err.response.result,
+        message: err.response.message
+      })
+    }
+  }
+
+  @Post('/login')
+  async login (
+    @Body() data: UserLoginDto,
+    @Res() response: Response
+  ) {
+    try {
+      const user = await this.userService.login({
+        username: data.username,
+        password: data.password
+      })
+
+      return response.json({
+        code: 200,
+        result: 'ok',
+        message: 'login success',
+        data: user
+      })
+    } catch (err) {
       return response.status(err.status).json({
         code: err.response.code,
         result: err.response.result,

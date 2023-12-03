@@ -3,11 +3,14 @@ import { Prisma } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaService } from 'src/prisma.service';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { UserLoginInterface } from './interfaces/user-login.interface';
 
 @Injectable()
 export class UsersService {
   constructor (
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService
   ) {}
   
   async create (data: Prisma.UserCreateInput) {
@@ -40,5 +43,33 @@ export class UsersService {
         }, HttpStatus.INTERNAL_SERVER_ERROR)
       }
     }
+  }
+
+  async login (data: UserLoginInterface) {
+    const user =  await this.prisma.user.findFirst({
+      where: { username: data.username }
+    })
+    if(!user) throw new HttpException({
+      code: 404,
+      result: 'not found',
+      message: 'user not found'
+    }, HttpStatus.NOT_FOUND);
+  
+    const comparePassword = await bcrypt.compare(data.password, user.password);
+    if(!comparePassword) throw new HttpException({
+      code: 400,
+      result: 'bad request',
+      message: 'invalid password'
+    }, HttpStatus.BAD_REQUEST);
+
+    const payload = {
+      id: user.id,
+      username: user.username
+    }
+
+    return {
+      username: user.username,
+      token: await this.jwtService.signAsync(payload, { secret: process.env.JWT_SECRET })
+    };
   }
 }
