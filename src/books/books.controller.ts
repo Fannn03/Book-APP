@@ -1,4 +1,4 @@
-import { Body, Controller, FileTypeValidator,  Get,  Param,  ParseFilePipe, Patch, Post, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, FileTypeValidator,  Get,  Param,  ParseFilePipe, Patch, Post, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { BookService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -102,6 +102,29 @@ export class BooksController {
       return response.json({
         code: 200,
         result: 'ok',
+        data: book
+      })
+    } catch (err) {
+      return response.status(err.status).json({
+        code: err.response.code,
+        result: err.response.result,
+        message: err.response.message
+      })
+    }
+  }
+
+  @Delete(':id')
+  async deleteBook (
+    @Param() params: any,
+    @Res() response: Response
+  ) {
+    try {
+      const book = await this.booksService.delete(Number(params.id));
+      
+      return response.json({
+        code: 200,
+        result: 'ok',
+        message: 'record deleted',
         data: book
       })
     } catch (err) {

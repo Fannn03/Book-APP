@@ -157,4 +157,43 @@ export class BookService {
       }
     }
   }
+
+  async delete(id: number) {
+    try {
+      const book = await this.prisma.book.delete({
+        where: { id: id }
+      });
+
+      fs.rmSync(`./public/books/${book.image_url}`);
+
+      return {
+        id: book.id,
+        title: book.title,
+        description: book.description,
+        image_url: `books/${book.image_url}`
+      };
+    } catch (err: any) {
+      if(err instanceof PrismaClientKnownRequestError) {
+        if(err.code == "P2025") {
+          throw new HttpException({
+            code: 404,
+            result: 'not found',
+            message: err.meta?.cause
+          }, HttpStatus.BAD_REQUEST)
+        } else {
+          throw new HttpException({
+            code: 500,
+            result: 'internal server error',
+            message: err.message
+          }, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+      } else {
+        throw new HttpException({
+          code: 500,
+          result: 'internal server error',
+          message: err.message
+        }, HttpStatus.INTERNAL_SERVER_ERROR)
+      }
+    }
+  }
 }
