@@ -51,6 +51,29 @@ export class BookService {
 
     }))
   }
+  async findAllByCategoryId (categoryId: number): Promise<BookInterface[] | null> {
+    const books =  await this.prisma.book.findMany({
+      where: {
+        category_id: categoryId
+      }
+    })
+
+    if(!books.length) return null;
+    return books.map((data: BookInterface) => ({
+      id: data.id,
+      category_id: data.category_id,
+      title: data.title,
+      description: data.description,
+      image_url: `books/${data.image_url}`,
+      release_year: data.release_year,
+      price: data.price,
+      total_page: data.total_page,
+      thickness: data.thickness,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt
+
+    }))
+  }
 
   async findOne(id: number) {
     return await this.prisma.book.findFirst({
