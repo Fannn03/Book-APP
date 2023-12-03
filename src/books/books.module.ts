@@ -12,6 +12,7 @@ import { CategoryService } from 'src/categories/categories.service';
     BookService,
     PrismaService,
     CategoryService
-  ]
+  ],
+  exports: [BookService]
 })
 export class BooksModule {}

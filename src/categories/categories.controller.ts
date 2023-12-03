@@ -2,12 +2,14 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Req, Res } from '@ne
 import { CategoryService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CategoryInterface } from './interfaces/category.interface';
-import { Response } from 'express';
+import { Response, response } from 'express';
+import { BookService } from 'src/books/books.service';
 
 @Controller('categories')
 export class CategoriesController {
   constructor(
-    private readonly categoriesService: CategoryService
+    private readonly categoriesService: CategoryService,
+    private readonly booksService: BookService
   ) {}
 
   @Get()
@@ -93,5 +95,27 @@ export class CategoriesController {
         message: err.response.message
       })
     }
+  }
+
+  @Get(':id/books')
+  async getAllCategoryBooks (
+    @Param() params: any,
+    @Res() response: Response
+  ) {
+    const books = await this.booksService.findAllByCategoryId(Number(params.id));
+
+    if(!books) return response.status(404).json({
+      code: 404,
+      result: 'not found',
+      message: 'category id not found',
+      data: books
+    })
+    
+    return response.json({
+      code: 200,
+      result: 'ok',
+      message: 'success fetch data',
+      data: books
+    })
   }
 }
