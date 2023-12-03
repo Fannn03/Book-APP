@@ -8,12 +8,13 @@ import { CategoriesModule } from './categories/categories.module';
 import { BooksModule } from './books/books.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { join } from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     ServeStaticModule.forRoot({
-      rootPath: './public'
+      rootPath: join(__dirname, '../public'),
     }),
     CategoriesModule,
     BooksModule,

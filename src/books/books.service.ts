@@ -27,7 +27,7 @@ export class BookService {
     if (params.maxPage) query.push({ release_year: { lte: Number(params.maxPage) } });
     if (params.sortByTitle) orderBy["title"] = params.sortByTitle;
 
-    return await this.prisma.book.findMany({
+    const books = await this.prisma.book.findMany({
       where: {
         AND: query,
       },
@@ -35,6 +35,21 @@ export class BookService {
         orderBy
       ]
     })
+
+    return books.map((data: BookInterface) => ({
+      id: data.id,
+      category_id: data.category_id,
+      title: data.title,
+      description: data.description,
+      image_url: `books/${data.image_url}`,
+      release_year: data.release_year,
+      price: data.price,
+      total_page: data.total_page,
+      thickness: data.thickness,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt
+
+    }))
   }
 
   async findOne(id: number) {
