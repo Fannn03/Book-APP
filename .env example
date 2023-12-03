@@ -1,1 +1,2 @@
 DATABASE_URL="mysql://jhondoe:jhondoepassword@localhost:3306/db"
+JWT_SECRET=
