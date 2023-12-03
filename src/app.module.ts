@@ -3,29 +3,24 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { CategoryService } from './categories/categories.service';
-import { CategoriesController } from './categories/categories.controller';
-import { PrismaService } from './prisma.service';
-import { BooksController } from './books/books.controller';
-import { BookService } from './books/books.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { CategoriesModule } from './categories/categories.module';
+import { BooksModule } from './books/books.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: './public'
-    })
+    }),
+    CategoriesModule,
+    BooksModule
   ],
   controllers: [
     AppController,
-    CategoriesController,
-    BooksController
   ],
   providers: [
     AppService,
-    PrismaService,
-    CategoryService,
-    BookService
   ],
 })
 export class AppModule {}
