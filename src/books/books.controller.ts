@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, FileTypeValidator,  Get,  Param,  ParseFilePipe, Patch, Post, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, FileTypeValidator,  Get,  Param,  ParseFilePipe, Patch, Post, Query, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { BookService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { sortByTitle } from './interfaces/query-book.interface';
 import { UpdateBookDto } from './dto/update-book.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('books')
 export class BooksController {
@@ -39,6 +40,7 @@ export class BooksController {
     })
   }
 
+  @UseGuards(AuthGuard)
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   async createBook (
@@ -75,6 +77,7 @@ export class BooksController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image'))
   async updateBook (
@@ -113,6 +116,7 @@ export class BooksController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':id')
   async deleteBook (
     @Param() params: any,

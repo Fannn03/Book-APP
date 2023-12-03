@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { CategoryService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CategoryInterface } from './interfaces/category.interface';
 import { Response, response } from 'express';
 import { BookService } from 'src/books/books.service';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('categories')
 export class CategoriesController {
@@ -11,7 +12,7 @@ export class CategoriesController {
     private readonly categoriesService: CategoryService,
     private readonly booksService: BookService
   ) {}
-
+  
   @Get()
   async getAllCategory (
     @Res() response: Response
@@ -25,6 +26,7 @@ export class CategoriesController {
     })
   }
 
+  @UseGuards(AuthGuard)
   @Post()
   async createCategory (
     @Body() data: CreateCategoryDto,
@@ -49,6 +51,7 @@ export class CategoriesController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Patch(':id')
   async updateCategory (
     @Param() params: any,
@@ -74,6 +77,7 @@ export class CategoriesController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':id')
   async deleteCategory (
     @Param() params: any,
